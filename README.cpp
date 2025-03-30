@@ -1,4 +1,4 @@
-# Sistem-Money-Tracking
+//Sistem-Money-Tracking
 //Project akhir mata kuliah Praktikum Algoritma Pemrograman dan Struktur Data
 
 #include <iostream>
@@ -77,17 +77,17 @@ int main()
         {
         case 1:
             daftar(jumlah);
-            berhenti();
+            //berhenti();
             break;
 
         case 2:
-            login();
-            berhenti();
+            //login();
+            //berhenti();
             break;
 
         case 3:
-            deleteakun();
-            berhenti();
+            //deleteakun();
+            //berhenti();
             break;
 
         case 4:
@@ -95,8 +95,8 @@ int main()
             break;
 
         default:
-            opsilain();
-            berhenti();
+            //opsilain();
+            //berhenti();
             break;
         }
     } while (pilih != 4);
