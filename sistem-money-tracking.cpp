@@ -13,6 +13,35 @@ struct pemilik
     char nama[50], password[50], verifikasi[50];
 }; pemilik pmlk[1000];
 
+void opsilain()
+{
+    cout << "=========================================  " << endl;
+    cout << "  Pilihan tidak Valid, silakan coba lagi  " << endl;
+    cout << "========================================= " << endl;
+}
+
+void berhenti()
+{
+    char pilihan;
+    cout << "Apakah Anda Ingin Kembali ke Menu Awal? (y/n): ";
+    cin >> pilihan;
+
+    if (pilihan == 'y' || pilihan == 'Y')
+    {
+        system("cls");
+    }
+    else if (pilihan == 'n' || pilihan == 'N')
+    {
+        cout << "Program selesai.\n";
+        exit(0);
+    }
+    else
+    {
+        opsilain();
+        berhenti();
+    }
+}
+
 void daftar(int &jumlah)
 {
     if (jumlah >= 1000)
@@ -47,6 +76,41 @@ void daftar(int &jumlah)
     jumlah++;
 }
 
+void login(){
+    char nama[1000], password[1000];
+    int angka;
+    FILE *file = NULL; // Inisialisasi di awal agar dikenali di semua case (untuk menghidari error di switch case)
+    do
+    {
+        cout << "=================================" << endl;
+        cout << "|       Pilih Tujuan Anda       |" << endl;
+        cout << "---------------------------------" << endl;
+        cout << "| 1. Login System Money Tracking|" << endl;
+        cout << "| 2. Reset Password             |" << endl;
+        cout << "| 3. Kembali                    |" << endl;
+        cout << "=================================" << endl;
+        cout << "Pilih [1-3] : ";
+        cin >> angka;
+        system("cls");
+
+        switch (angka)
+        {
+        case 1:
+            // login system money tracking
+
+        case 2:
+            // reset password
+
+        case 3:
+            break;
+
+        default:
+            opsilain();
+            berhenti();
+        }
+    } while (angka != 3);
+} 
+
 void tampilmenu(int &pilih)
 {
     cout << "===================================" << endl;
@@ -61,12 +125,8 @@ void tampilmenu(int &pilih)
     cin >> pilih;
 }
 
-
-
-
 int main()
 {
-
     int pilih, jumlah = 0;
     do
     {
@@ -77,12 +137,12 @@ int main()
         {
         case 1:
             daftar(jumlah);
-            //berhenti();
+            berhenti();
             break;
 
         case 2:
-            //login();
-            //berhenti();
+            login();
+            berhenti();
             break;
 
         case 3:
@@ -95,8 +155,8 @@ int main()
             break;
 
         default:
-            //opsilain();
-            //berhenti();
+            opsilain();
+            berhenti();
             break;
         }
     } while (pilih != 4);
