@@ -13,6 +13,11 @@ struct pemilik
     char nama[50], password[50], verifikasi[50];
 }; pemilik pmlk[1000];
 
+
+// properti money tracking ⬇️
+int totalitem = 0; // Jumlah transaksi yang tersimpan
+char loggedInUser[50]; // Variabel untuk menyimpan pengguna yang sedang login
+
 void opsilain()
 {
     cout << "=========================================  " << endl;
@@ -79,6 +84,8 @@ void daftar(int &jumlah)
 void login(){
     char nama[1000], password[1000];
     int angka;
+    pemilik temp;
+    bool found = false;
     FILE *file = NULL; // Inisialisasi di awal agar dikenali di semua case (untuk menghidari error di switch case)
     do
     {
@@ -97,6 +104,99 @@ void login(){
         {
         case 1:
             // login system money tracking
+            cout << "\n===== Login System Money Tracking =====" << endl;
+            cout << "Masukkan Nama    : ";
+            cin.ignore();
+            cin.getline(nama, 50);
+            cout << "Masukkan Password: ";
+            cin.getline(password, 50);
+            system("cls");
+
+            file = fopen("akun.dat", "rb");
+            if (file != NULL)
+            {
+                while (fread(&temp, sizeof(pemilik), 1, file))
+                { // temp berfungsi sebagai variabel sementara untuk membaca data akun dari file
+                  // program membuka file dan membaca akun satu per satu menggunakan fread lalu disimpan dalam temp
+                    if (strcmp(temp.nama, nama) == 0 && strcmp(temp.password, password) == 0)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                fclose(file);
+            }
+
+            if (found)
+            {
+                strcpy(loggedInUser, nama); // Simpan nama pengguna yang berhasil login
+                int pilihan;
+                do
+                {
+                    cout << "===================================" << endl;
+                    cout << "|      Sistem Money Tracking      |" << endl;
+                    cout << "===================================" << endl;
+                    cout << "| 1. Catat Transaksi              | " << endl;
+                    cout << "| 2. Tampilkan Riwayat Transaksi  |" << endl;
+                    cout << "| 3. Sorting                      |" << endl;
+                    cout << "| 4. Search Riwayat Transaksi     |" << endl;
+                    cout << "| 5. Statistik Data               |" << endl;
+                    cout << "| 6. Hapus Data                   |" << endl;
+                    cout << "| 7. Kembali                      |" << endl;
+                    cout << "===================================" << endl;
+                    cout << "Pilih Menu[1-7] : ";
+                    cin >> pilihan;
+                    system("cls");
+
+                    switch (pilihan)
+                    {
+                    case 1:
+                        // catat();
+                        berhenti();
+                        break;
+
+                    case 2:
+                        // tampil();
+                        berhenti();
+                        break;
+
+                    case 3:
+                        // sorting();
+                        berhenti();
+                        break;
+
+                    case 4:
+                        // searching();
+                        berhenti();
+                        break;
+
+                    case 5:
+                        // statistik();
+                        berhenti();
+                        break;
+
+                    case 6:
+                        // hapusdata();
+                        berhenti();
+                        break;
+
+                    case 7:
+                        strcpy(loggedInUser, ""); // Hapus informasi login saat keluar
+                        break;
+
+                    default:
+                        opsilain();
+                        berhenti();
+                        break;
+                    }
+                } while (pilihan != 7);
+            }
+            else
+            {
+                cout << "\n[Error] Nama atau Password salah!" << endl;
+            }
+            berhenti();
+            break;
 
         case 2:
             // reset password
