@@ -264,10 +264,136 @@ void login(Node *head)
     } while (angka != 3);
 }
 
+void deleteakun(Node*& head)
+{
+    char nama_login[50], password[50], filename[100];
+    bool ditemukan = false;
+    int total = 0;
+
+
+    Node* bantu = head;
+    Node* previous = nullptr;
+
+    cout << "\n                     Hapus Akun" << endl;
+    cout << "==========================================================" << endl;
+    cin.ignore();
+    cout << "\nMasukkan Nama Akun Yang Akan Dihapus : ";
+    cin.getline(nama_login, 50);
+    cout << "Password                             : ";
+    cin.getline(password, 50);
+
+    while (bantu != nullptr) {
+        if (strcmp(nama_login, bantu->info->nama) == 0 && strcmp(password, bantu->info->password) == 0) {
+            ditemukan = true;
+
+            // Hapus file transaksi jika ada
+            sprintf(filename, "%s_transaksi.dat", nama_login);
+            if (remove(filename) != 0) {
+                perror("Gagal menghapus file transaksi");
+            } else {
+                cout << "File transaksi berhasil dihapus." << endl;
+            }
+
+            // Jika node yang dihapus adalah head (awal linked list)
+            if (previous == nullptr) {
+                head = bantu->next;  // Update head untuk menunjuk ke node berikutnya
+            } else {
+                previous->next = bantu->next;  // Leverage previous untuk menghapus node
+            }
+
+            delete bantu;  // Hapus node dari memori
+            cout << "Akun berhasil dihapus." << endl;
+
+            // Menyimpan kembali linked list ke dalam file
+            FILE* file = fopen("akun.dat", "wb");
+            if (file) {
+                Node* temp = head;
+                while (temp != nullptr) {
+                    fwrite(temp->info, sizeof(pemilik), 1, file);
+                    temp = temp->next;
+                }
+                fclose(file);
+            } else {
+                cout << "Gagal menulis ulang file akun." << endl;
+            }
+
+            break;  // keluar dari loop jika akun sudah dihapus
+        }
+
+        // Update previous dan bantu untuk langkah berikutnya
+        previous = bantu;
+        bantu = bantu->next;
+    }
+
+    if (!ditemukan) {
+        cout << "Akun tidak ditemukan atau password salah." << endl;
+    }
+}
+
+void bacadataakun(Node*& head){
+    FILE *file = fopen("akun.dat", "rb");
+    pemilik temp;
+    if (!file)
+    {
+        cout << "Belum ada data tersimpan atau gagal membuka file." << endl;
+        return;
+    }
+    while (fread(&temp, sizeof(pemilik), 1, file))
+    {
+        sisipDepan(head, temp);
+
+    }
+
+    fclose(file);
+}
+
+void tampilkanakun(int &jumlah, Node* head)
+{
+    int i = 0;
+    FILE *file = fopen("akun.dat", "rb");
+    pemilik temp;
+    if (!file)
+    {
+        cout << "Belum ada data tersimpan atau gagal membuka file." << endl;
+        return;
+    }
+    jumlah = 0;
+    while (fread(&temp, sizeof(pemilik), 1, file))
+    {
+
+        jumlah++;
+    }
+    rewind(file);
+    cout << "=======================================================================" << endl;
+    cout << "                           Daftar Akun" << endl;
+    cout << "=======================================================================" << endl;
+    if (jumlah == 0)
+    {
+        cout << " Tidak ada akun yang tercatat.\n";
+        return;
+    }
+    else
+    {
+        while (head != nullptr) {
+            pemilik* p = head->info;  // langsung ambil pointer data
+            cout << " Akun Ke-" << i + 1 << endl;
+            cout << " " << p->nama << endl;
+            cout << " Tanggal Pendaftaran: " << p->datetime << endl;
+            cout << endl;
+            i++;
+            head = head->next;
+        }
+        cout << endl;
+        cout << "Data Sukses Ditampilkan\n";
+    }
+    fclose(file);
+}
+
 int main()
 {
 
     Node *head = nullptr;
+    bacadataakun(head);
     int pilih, jumlah = 0;
     do
     {
@@ -287,12 +413,12 @@ int main()
             break;
 
         case 3:
-            //deleteakun(head);
+            deleteakun(head);
             berhenti();
             break;
 
         case 4:
-            //tampilkanakun(jumlah, head);
+            tampilkanakun(jumlah, head);
             berhenti();
             break;
 
