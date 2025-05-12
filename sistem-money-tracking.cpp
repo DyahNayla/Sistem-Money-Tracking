@@ -6,13 +6,33 @@
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
+#include <ctime>
 using namespace std;
 
 struct pemilik
 {
     char nama[50], password[50], verifikasi[50];
-}; pemilik pmlk[1000];
+    char datetime[100]; // Menyimpan tanggal dan waktu pendaftaran
+}; 
+pemilik pmlk;
 
+struct Node
+{
+    pemilik *info;
+    Node *next;
+};
+
+// Sisip depan ke linked list
+void sisipDepan(Node *&head, pemilik pmlk)
+{
+    pemilik *baru = new pemilik;
+    *baru = pmlk;
+
+    Node *nodeBaru = new Node;
+    nodeBaru->info = baru; // data sekarang bertipe pemilik*
+    nodeBaru->next = head;
+    head = nodeBaru;
+}
 
 // properti money tracking ⬇️
 int totalitem = 0; // Jumlah transaksi yang tersimpan
@@ -47,8 +67,42 @@ void berhenti()
     }
 }
 
-void daftar(int &jumlah)
+void tampilmenu(int &pilih)
 {
+    cout << "===================================" << endl;
+    cout << "|           Menu Utama            |" << endl;
+    cout << "===================================" << endl;
+    cout << "| 1. Daftar Akun                  | " << endl;
+    cout << "| 2. Login Akun                   |" << endl;
+    cout << "| 3. Hapus Akun                   |" << endl;
+    cout << "| 4. Keluar Program               |" << endl;
+    cout << "===================================" << endl;
+    cout << "Pilih Menu[1-4] : ";
+    cin >> pilih;
+}
+
+void daftar(int &jumlah, Node *&head)
+{
+
+    FILE *file;
+    pemilik temp;
+    file = fopen("akun.dat", "rb");
+    jumlah = 0;
+
+    while (fread(&temp, sizeof(pemilik), 1, file))
+    {
+        jumlah++;
+    }
+    fclose(file);
+
+    file = fopen("akun.dat", "ab");
+
+    if (!file)
+    {
+        cout << "Gagal membuka file untuk menulis!" << endl;
+        return;
+    }
+
     if (jumlah >= 1000)
     {
         cout << "\n[Error] Kapasitas akun penuh!" << endl;
@@ -60,33 +114,30 @@ void daftar(int &jumlah)
     cout << "\n                          Total Akun: " << jumlah << endl;
     cin.ignore();
     cout << "\nMasukan Nama        : ";
-    cin.getline(pmlk[jumlah].nama, 50);
+    cin.getline(pmlk.nama, 50);
     cout << "Masukkan Password   : ";
-    cin.getline(pmlk[jumlah].password, 50);
+    cin.getline(pmlk.password, 50);
     cout << "Verifikasi Untuk Ganti Password (bebas) : ";
-    cin.getline(pmlk[jumlah].verifikasi, 50);
+    cin.getline(pmlk.verifikasi, 50);
+    time_t now = time(0);
+    strftime(pmlk.datetime, sizeof(pmlk.datetime), "%A, %d %B %Y, %H:%M:%S", localtime(&now));
+    sisipDepan(head, pmlk); // ke linked list
 
-    FILE *file = fopen("akun.dat", "ab");
-    if (!file)
-    {
-        cout << "Gagal membuka file untuk menulis!" << endl;
-        return;
-    }
-    else
-    {
-        fwrite(&pmlk[jumlah], sizeof(pemilik), 1, file);
-        fclose(file);
-        cout << "\nAkun Berhasil Didaftarkan!" << endl;
-    }
+    fwrite(&pmlk, sizeof(pemilik), 1, file);
+
     jumlah++;
+    fclose(file);
+    cout << "\nAkun Berhasil Didaftarkan!" << endl;
 }
 
-void login(){
+void login(Node *head)
+{
     char nama[1000], password[1000];
     int angka;
     pemilik temp;
     bool found = false;
     FILE *file = NULL; // Inisialisasi di awal agar dikenali di semua case (untuk menghidari error di switch case)
+
     do
     {
         cout << "=================================" << endl;
@@ -103,7 +154,6 @@ void login(){
         switch (angka)
         {
         case 1:
-            // login system money tracking
             cout << "\n===== Login System Money Tracking =====" << endl;
             cout << "Masukkan Nama    : ";
             cin.ignore();
@@ -111,10 +161,12 @@ void login(){
             cout << "Masukkan Password: ";
             cin.getline(password, 50);
             system("cls");
+            found = false;
 
             file = fopen("akun.dat", "rb");
             if (file != NULL)
             {
+
                 while (fread(&temp, sizeof(pemilik), 1, file))
                 { // temp berfungsi sebagai variabel sementara untuk membaca data akun dari file
                   // program membuka file dan membaca akun satu per satu menggunakan fread lalu disimpan dalam temp
@@ -151,32 +203,32 @@ void login(){
                     switch (pilihan)
                     {
                     case 1:
-                        // catat();
+                        //catat();
                         berhenti();
                         break;
 
                     case 2:
-                        // tampil();
+                        //tampil();
                         berhenti();
                         break;
 
                     case 3:
-                        // sorting();
+                        //sorting();
                         berhenti();
                         break;
 
                     case 4:
-                        // searching();
+                        //searching();
                         berhenti();
                         break;
 
                     case 5:
-                        // statistik();
+                        //statistik();
                         berhenti();
                         break;
 
                     case 6:
-                        // hapusdata();
+                        //hapusdata();
                         berhenti();
                         break;
 
@@ -199,7 +251,7 @@ void login(){
             break;
 
         case 2:
-            // reset password
+            //resetpassword();
 
         case 3:
             break;
@@ -207,26 +259,15 @@ void login(){
         default:
             opsilain();
             berhenti();
+            break;
         }
     } while (angka != 3);
-} 
-
-void tampilmenu(int &pilih)
-{
-    cout << "===================================" << endl;
-    cout << "|           Menu Utama            |" << endl;
-    cout << "===================================" << endl;
-    cout << "| 1. Daftar Akun                  | " << endl;
-    cout << "| 2. Login Akun                   |" << endl;
-    cout << "| 3. Hapus Akun                   |" << endl;
-    cout << "| 4. Keluar Program               |" << endl;
-    cout << "===================================" << endl;
-    cout << "Pilih Menu[1-4] : ";
-    cin >> pilih;
 }
 
 int main()
 {
+
+    Node *head = nullptr;
     int pilih, jumlah = 0;
     do
     {
@@ -236,21 +277,26 @@ int main()
         switch (pilih)
         {
         case 1:
-            daftar(jumlah);
+            daftar(jumlah, head);
             berhenti();
             break;
 
         case 2:
-            login();
+            login(head);
             berhenti();
             break;
 
         case 3:
-            //deleteakun();
-            //berhenti();
+            //deleteakun(head);
+            berhenti();
             break;
 
         case 4:
+            //tampilkanakun(jumlah, head);
+            berhenti();
+            break;
+
+        case 5:
             exit(0);
             break;
 
@@ -259,6 +305,6 @@ int main()
             berhenti();
             break;
         }
-    } while (pilih != 4);
+    } while (pilih != 5);
     return 0;
 }
