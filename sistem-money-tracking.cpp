@@ -34,6 +34,14 @@ void sisipDepan(Node *&head, pemilik pmlk)
     head = nodeBaru;
 }
 
+
+struct moneytrack
+{
+    char kategori[50], hari[50], metodetransaksi[50];
+    int date, years, month, nilaiTransaksi;
+};
+moneytrack money[1000];
+
 // properti money tracking ⬇️
 int totalitem = 0; // Jumlah transaksi yang tersimpan
 char loggedInUser[50]; // Variabel untuk menyimpan pengguna yang sedang login
@@ -130,6 +138,75 @@ void daftar(int &jumlah, Node *&head)
     cout << "\nAkun Berhasil Didaftarkan!" << endl;
 }
 
+void catat()
+{
+    int input;
+    char delimiter;
+    char filename[100];
+
+    if (strlen(loggedInUser) == 0)
+    {
+        cout << "[Error] Anda harus login terlebih dahulu!\n";
+        return;
+    }
+
+    strcpy(filename, loggedInUser);     // Menggunakan nama pengguna yang login
+    strcat(filename, "_transaksi.dat"); // Menambahkan akhiran untuk file transaksi pengguna
+    FILE *file;
+    moneytrack temp;
+    file = fopen(filename, "rb");
+    totalitem = 0;
+
+    while (fread(&temp, sizeof(moneytrack), 1, file))
+    {
+        totalitem++;
+    }
+    fclose(file);
+
+    file = fopen(filename, "ab");
+    if (!file)
+    {
+        cout << "Gagal membuka file untuk menulis!" << endl;
+        return;
+    }
+
+    int startIndex = totalitem; // simpan indeks awal sebelum input baru
+
+    cout << "=======================================================================" << endl;
+    cout << "                           Catat Keuangan" << endl;
+    cout << "=======================================================================" << endl;
+    cout << " Berapa Yang Ingin Anda Input : ";
+    cin >> input;
+    cout << endl;
+
+    for (int i = 0; i < input; i++)
+    {
+        cout << " Masukkan Data Ke-" << totalitem + 1 << endl;
+        cin.ignore();
+        cout << " 1. Kategori                                  : ";
+        cin.getline(money[totalitem].kategori, 50);
+        cout << " 2. Hari                                      : ";
+        cin.getline(money[totalitem].hari, 50);
+        cout << " 3. Tanggal-Bulan-Tahun (example: dd-mm-yyyy) : ";
+        cin >> money[totalitem].date >> delimiter >> money[totalitem].month >> delimiter >> money[totalitem].years;
+        cout << " 4. Nilai Transaksi                           : Rp - ";
+        cin >> money[totalitem].nilaiTransaksi;
+        cin.ignore();
+        cout << " 5. Metode Transaksi (Cash / Debit / Kredit)  : ";
+        cin.getline(money[totalitem].metodetransaksi, 50);
+        cout << endl;
+        totalitem++;
+    }
+    for (int i = startIndex; i < totalitem; i++)
+    {
+        fwrite(&money[i], sizeof(moneytrack), 1, file);
+    }
+
+    fclose(file);
+    cout << "Data berhasil disimpan!" << endl;
+}
+
+
 void login(Node *head)
 {
     char nama[1000], password[1000];
@@ -203,7 +280,7 @@ void login(Node *head)
                     switch (pilihan)
                     {
                     case 1:
-                        //catat();
+                        catat();
                         berhenti();
                         break;
 
