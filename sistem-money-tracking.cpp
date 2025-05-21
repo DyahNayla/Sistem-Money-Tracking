@@ -260,6 +260,61 @@ void tampil()
     fclose(file);
 }
 
+void bubblesort()
+{
+    for (int i = 0; i < totalitem - 1; i++)
+    {
+        for (int j = 0; j < totalitem - i - 1; j++)
+        {
+            if (strcmp(money[j].kategori, money[j + 1].kategori) > 0)
+            {
+                swap(money[j], money[j + 1]);
+            }
+        }
+    }
+}
+
+void sorting()
+{
+    char filename[100];
+
+    if (strlen(loggedInUser) == 0)
+    {
+        cout << "[Error] Anda harus login terlebih dahulu!\n";
+        return;
+    }
+
+    strcpy(filename, loggedInUser);     
+    strcat(filename, "_transaksi.dat"); 
+    FILE *file = fopen(filename, "rb");
+    if (!file)
+    {
+        cout << "Gagal membuka file untuk menulis!" << endl;
+        return;
+    }
+    totalitem = 0;
+    while (fread(&money[totalitem], sizeof(moneytrack), 1, file))
+    {
+        totalitem++;
+    }
+    bubblesort();
+    cout << "=======================================================================" << endl;
+    cout << "               Riwayat Keuangan (Sorted by Category)" << endl;
+    cout << "=======================================================================" << endl;
+    for (int i = 0; i < totalitem; i++)
+    {
+        cout << " Data Ke-" << i + 1 << endl;
+        cout << " 1. Kategori                                  : " << money[i].kategori << endl;
+        cout << " 3. Tanggal-Bulan-Tahun                       : " << money[i].date << "-" << money[i].month << "-" << money[i].years << endl;
+        cout << " 3. Hari                                      : " << money[i].hari << endl;
+        cout << " 4. Nilai Transaksi                           : Rp - " << money[i].nilaiTransaksi << endl;
+        cout << " 5. Metode Transaksi                          : " << money[i].metodetransaksi << endl;
+        cout << endl;
+    }
+    cout << "Data Sukses Ditampilkan\n";
+    fclose(file);
+}
+
 void login(Node *head)
 {
     char nama[1000], password[1000];
@@ -341,7 +396,7 @@ void login(Node *head)
                         break;
 
                     case 3:
-                        //sorting();
+                        sorting();
                         berhenti();
                         break;
 
