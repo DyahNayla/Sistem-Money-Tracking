@@ -12,7 +12,7 @@ using namespace std;
 struct pemilik
 {
     char nama[50], password[50], verifikasi[50];
-    char datetime[100]; // Menyimpan tanggal dan waktu pendaftaran
+    char datetime[100]; 
 };
 pemilik pmlk;
 
@@ -29,7 +29,7 @@ void sisipDepan(Node *&head, pemilik pmlk)
     *baru = pmlk;
 
     Node *nodeBaru = new Node;
-    nodeBaru->info = baru; // data sekarang bertipe pemilik*
+    nodeBaru->info = baru; 
     nodeBaru->next = head;
     head = nodeBaru;
 }
@@ -42,7 +42,7 @@ struct moneytrack
 moneytrack money[1000];
 
 // properti money tracking ⬇️
-int totalitem = 0;     // Jumlah transaksi yang tersimpan
+int totalitem = 0;     
 char loggedInUser[50]; // Variabel untuk menyimpan pengguna yang sedang login
 
 void opsilain()
@@ -207,14 +207,66 @@ void catat()
     cout << "Data berhasil disimpan!" << endl;
 }
 
+void tampil()
+{
+    char filename[100];
+    int i = 0;
+    moneytrack temp;
+
+    if (strlen(loggedInUser) == 0)
+    {
+        cout << "[Error] Anda harus login terlebih dahulu!\n";
+        return;
+    }
+    strcpy(filename, loggedInUser);     
+    strcat(filename, "_transaksi.dat"); 
+    FILE *file = fopen(filename, "rb");
+    if (!file)
+    {
+        cout << "Belum ada data tersimpan atau gagal membuka file." << endl;
+        return;
+    }
+    totalitem = 0;
+    while (fread(&temp, sizeof(moneytrack), 1, file))
+    {
+        totalitem++;
+    }
+    rewind(file);
+    cout << "=======================================================================" << endl;
+    cout << "                           Riwayat Keuangan" << endl;
+    cout << "=======================================================================" << endl;
+    if (totalitem == 0)
+    {
+        cout << " Tidak ada transaksi yang tercatat.\n";
+        return;
+    }
+    else
+    {
+        cout << "Membuka file: " << filename << endl;
+
+        while (fread(&temp, sizeof(moneytrack), 1, file))
+        {
+            cout << " Data Ke-" << i + 1 << endl;
+            cout << " 1. Kategori                                  : " << temp.kategori << endl;
+            cout << " 2. Hari                                      : " << temp.hari << endl;
+            cout << " 3. Tanggal-Bulan-Tahun                       : " << temp.date << "-" << temp.month << "-" << temp.years << endl;
+            cout << " 4. Nilai Transaksi                           : Rp - " << temp.nilaiTransaksi << endl;
+            cout << " 5. Metode Transaksi                          : " << temp.metodetransaksi << endl;
+            cout << endl;
+            i++;
+        }
+        cout << "Data Sukses Ditampilkan\n";
+    }
+    fclose(file);
+}
+
 void login(Node *head)
 {
     char nama[1000], password[1000];
     int angka;
     pemilik temp;
     bool found = false;
-    FILE *file = NULL; // Inisialisasi di awal agar dikenali di semua case (untuk menghidari error di switch case)
-
+    FILE *file = NULL;
     do
     {
         cout << "=================================" << endl;
@@ -279,17 +331,17 @@ void login(Node *head)
                     switch (pilihan)
                     {
                     case 1:
-                        // catat();
+                        catat();
                         berhenti();
                         break;
 
                     case 2:
-                        // tampil();
+                        tampil();
                         berhenti();
                         break;
 
                     case 3:
-                        // sorting();
+                        //sorting();
                         berhenti();
                         break;
 
