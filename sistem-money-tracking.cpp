@@ -392,6 +392,45 @@ void searching()
     fclose(file);
 }
 
+void statistik()
+{
+    if (strlen(loggedInUser) == 0)
+    {
+        cout << "[Error] Anda harus login terlebih dahulu!\n";
+        return;
+    }
+
+    char filename[100];
+    strcpy(filename, loggedInUser);
+    strcat(filename, "_transaksi.dat");
+
+    FILE *file = fopen(filename, "rb");
+    if (!file)
+    {
+        cout << "Belum ada data tersimpan atau gagal membuka file." << endl;
+        return;
+    }
+
+    int totalPengeluaran = 0;
+    int jumlahTransaksi = 0;
+    moneytrack temp;
+
+    // Membaca semua transaksi dari file
+    while (fread(&temp, sizeof(moneytrack), 1, file))
+    {
+        totalPengeluaran += temp.nilaiTransaksi; // Berisi nilai transaksi dari data yang baru saja dibaca
+        jumlahTransaksi++;
+    }
+    fclose(file);
+
+    // Menampilkan hasil statistik
+    cout << "=======================================================================" << endl;
+    cout << "                           Statistik Keuangan" << endl;
+    cout << "=======================================================================" << endl;
+    cout << " Total Transaksi: " << jumlahTransaksi << endl;
+    cout << " Total Pengeluaran: Rp - " << totalPengeluaran << endl;
+    cout << "=======================================================================" << endl;
+}
 
 void login(Node *head)
 {
