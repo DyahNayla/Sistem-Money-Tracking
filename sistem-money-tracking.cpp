@@ -432,6 +432,68 @@ void statistik()
     cout << "=======================================================================" << endl;
 }
 
+void hapusdata()
+{
+    int nomor;
+    moneytrack temp[1000];
+    char filename[100];
+
+    sprintf(filename, "%s_transaksi.dat", loggedInUser);
+    FILE *file = fopen(filename, "rb");
+    if (!file)
+    {
+        cout << "Belum ada data tersimpan atau gagal membuka file." << endl;
+        berhenti();
+        return;
+    }
+
+    totalitem = 0;
+    while (fread(&temp[totalitem], sizeof(moneytrack), 1, file) == 1)
+    {
+        totalitem++;
+    }
+    fclose(file);
+
+    cout << "===================================================" << endl;
+    cout << "                  Delete Menu" << endl;
+    cout << "===================================================" << endl;
+    cout << " Pilih Data Ke- Berapa Yang Akan Dihapus : ";
+    cin >> nomor;
+    cout << endl;
+
+    if (nomor < 1 || nomor > totalitem)
+    {
+        cout << "Data tidak valid." << endl;
+        berhenti();
+        return;
+    }
+
+    // Geser data setelah indeks yang dihapus ke kiri
+    for (int i = nomor - 1; i < totalitem - 1; i++)
+    {
+        temp[i] = temp[i + 1];
+    }
+
+    totalitem--; // kurangi total karena 1 data dihapus
+
+    // Tulis ulang data yang sudah diperbarui ke file
+    file = fopen(filename, "wb");
+    if (!file)
+    {
+        cout << "Gagal membuka file untuk menulis ulang." << endl;
+        return;
+    }
+
+    for (int i = 0; i < totalitem; i++)
+    {
+        fwrite(&temp[i], sizeof(moneytrack), 1, file);
+    }
+
+    fclose(file);
+    cout << "Data telah dihapus." << endl;
+    berhenti();
+}
+
 void login(Node *head)
 {
     char nama[1000], password[1000];
