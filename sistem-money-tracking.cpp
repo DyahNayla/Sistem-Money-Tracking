@@ -315,6 +315,84 @@ void sorting()
     fclose(file);
 }
 
+void searching()
+{
+    char filename[100];
+
+    if (strlen(loggedInUser) == 0)
+    {
+        cout << "[Error] Anda harus login terlebih dahulu!\n";
+        return;
+    }
+
+    strcpy(filename, loggedInUser);     // Menggunakan nama pengguna yang login
+    strcat(filename, "_transaksi.dat"); // Menambahkan akhiran untuk file transaksi pengguna
+
+    FILE *file = fopen(filename, "rb");
+    if (!file)
+    {
+        cout << "Gagal membuka file untuk menulis!" << endl;
+        return;
+    }
+    totalitem = 0;
+    while (fread(&money[totalitem], sizeof(moneytrack), 1, file))
+    {
+        totalitem++;
+    }
+
+    bubblesort();
+    char cari[50];
+    bool found = false;
+    int awal = 0, akhir = totalitem - 1, tengah;
+
+    cout << "=============================================" << endl;
+    cout << "         PENCARIAN BERDASARKAN KATEGORI       " << endl;
+    cout << "=============================================" << endl;
+    cout << "Masukkan kategori yang akan dicari: ";
+    cin.ignore();
+    cin.getline(cari, 50);
+    system("cls");
+    cout << endl << endl;
+
+    while (awal <= akhir)
+    {
+        tengah = (awal + akhir) / 2;
+
+        if ((strcmp(money[tengah].kategori, cari) == 0))
+        {
+            found = true;
+            cout << "=======================================================================" << endl;
+            cout << "                           Data Ditemukan" << endl;
+            cout << "=======================================================================" << endl;
+            cout << "Kategori: " << money[tengah].kategori << endl;
+            cout << "Tahun: " << money[tengah].years << endl;
+            cout << "Hari: " << money[tengah].hari << endl;
+            cout << "Nilai Transaksi: Rp - " << money[tengah].nilaiTransaksi << endl;
+            cout << "Metode Transaksi: " << money[tengah].metodetransaksi << endl;
+            cout << "=======================================================================" << endl;
+            break;
+        }
+
+        else if (strcmp(money[tengah].kategori, cari) > 0)
+        {
+            akhir = tengah - 1;
+        }
+        else
+        {
+            awal = tengah + 1;
+        }
+    }
+
+    if (!found)
+    {
+        cout << "=============================================" << endl;
+        cout << "  Data dengan kategori " << cari << " tidak ditemukan.  " << endl;
+        cout << "=============================================" << endl;
+    }
+    fclose(file);
+}
+
+
 void login(Node *head)
 {
     char nama[1000], password[1000];
@@ -401,17 +479,17 @@ void login(Node *head)
                         break;
 
                     case 4:
-                        // searching();
+                        searching();
                         berhenti();
                         break;
 
                     case 5:
-                        // statistik();
+                        statistik();
                         berhenti();
                         break;
 
                     case 6:
-                        // hapusdata();
+                        hapusdata();
                         berhenti();
                         break;
 
