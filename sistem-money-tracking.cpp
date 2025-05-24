@@ -12,7 +12,7 @@ using namespace std;
 struct pemilik
 {
     char nama[50], password[50], verifikasi[50];
-    char datetime[100]; 
+    char datetime[100];
 };
 pemilik pmlk;
 
@@ -22,14 +22,16 @@ struct Node
     Node *next;
 };
 
+Node *head = nullptr;
+
 // Sisip depan ke linked list
-void sisipDepan(Node *&head, pemilik pmlk)
+void sisipDepan(pemilik pmlk)
 {
     pemilik *baru = new pemilik;
     *baru = pmlk;
 
     Node *nodeBaru = new Node;
-    nodeBaru->info = baru; 
+    nodeBaru->info = baru;
     nodeBaru->next = head;
     head = nodeBaru;
 }
@@ -42,7 +44,7 @@ struct moneytrack
 moneytrack money[1000];
 
 // properti money tracking ⬇️
-int totalitem = 0;     
+int totalitem = 0;
 char loggedInUser[50]; // Variabel untuk menyimpan pengguna yang sedang login
 
 void opsilain()
@@ -89,7 +91,7 @@ void tampilmenu(int &pilih)
     cin >> pilih;
 }
 
-void daftar(int &jumlah, Node *&head)
+void daftar(int &jumlah)
 {
 
     FILE *file;
@@ -130,7 +132,7 @@ void daftar(int &jumlah, Node *&head)
     cin.getline(pmlk.verifikasi, 50);
     time_t now = time(0);
     strftime(pmlk.datetime, sizeof(pmlk.datetime), "%A, %d %B %Y, %H:%M:%S", localtime(&now));
-    sisipDepan(head, pmlk); 
+    sisipDepan(pmlk);
 
     fwrite(&pmlk, sizeof(pemilik), 1, file);
 
@@ -151,8 +153,8 @@ void catat()
         return;
     }
 
-    strcpy(filename, loggedInUser);     
-    strcat(filename, "_transaksi.dat"); 
+    strcpy(filename, loggedInUser);
+    strcat(filename, "_transaksi.dat");
     FILE *file;
     moneytrack temp;
     file = fopen(filename, "rb");
@@ -171,7 +173,7 @@ void catat()
         return;
     }
 
-    int startIndex = totalitem; 
+    int startIndex = totalitem;
 
     cout << "=======================================================================" << endl;
     cout << "                           Catat Keuangan" << endl;
@@ -218,8 +220,8 @@ void tampil()
         cout << "[Error] Anda harus login terlebih dahulu!\n";
         return;
     }
-    strcpy(filename, loggedInUser);     
-    strcat(filename, "_transaksi.dat"); 
+    strcpy(filename, loggedInUser);
+    strcat(filename, "_transaksi.dat");
     FILE *file = fopen(filename, "rb");
     if (!file)
     {
@@ -284,8 +286,8 @@ void sorting()
         return;
     }
 
-    strcpy(filename, loggedInUser);     
-    strcat(filename, "_transaksi.dat"); 
+    strcpy(filename, loggedInUser);
+    strcat(filename, "_transaksi.dat");
     FILE *file = fopen(filename, "rb");
     if (!file)
     {
@@ -352,7 +354,8 @@ void searching()
     cin.ignore();
     cin.getline(cari, 50);
     system("cls");
-    cout << endl << endl;
+    cout << endl
+         << endl;
 
     while (awal <= akhir)
     {
@@ -415,7 +418,7 @@ void statistik()
     int jumlahTransaksi = 0;
     moneytrack temp;
 
-    // Membaca semua transaksi dari file
+    
     while (fread(&temp, sizeof(moneytrack), 1, file))
     {
         totalPengeluaran += temp.nilaiTransaksi; // Berisi nilai transaksi dari data yang baru saja dibaca
@@ -423,7 +426,6 @@ void statistik()
     }
     fclose(file);
 
-    // Menampilkan hasil statistik
     cout << "=======================================================================" << endl;
     cout << "                           Statistik Keuangan" << endl;
     cout << "=======================================================================" << endl;
@@ -468,15 +470,13 @@ void hapusdata()
         return;
     }
 
-    // Geser data setelah indeks yang dihapus ke kiri
     for (int i = nomor - 1; i < totalitem - 1; i++)
     {
         temp[i] = temp[i + 1];
     }
 
-    totalitem--; // kurangi total karena 1 data dihapus
+    totalitem--; 
 
-    // Tulis ulang data yang sudah diperbarui ke file
     file = fopen(filename, "wb");
     if (!file)
     {
@@ -494,7 +494,7 @@ void hapusdata()
     berhenti();
 }
 
-void login(Node *head)
+void login()
 {
     char nama[1000], password[1000];
     int angka;
@@ -531,7 +531,7 @@ void login(Node *head)
             {
 
                 while (fread(&temp, sizeof(pemilik), 1, file))
-                { 
+                {
                     if (strcmp(temp.nama, nama) == 0 && strcmp(temp.password, password) == 0)
                     {
                         found = true;
@@ -543,7 +543,7 @@ void login(Node *head)
 
             if (found)
             {
-                strcpy(loggedInUser, nama); 
+                strcpy(loggedInUser, nama);
                 int pilihan;
                 do
                 {
@@ -595,7 +595,7 @@ void login(Node *head)
                         break;
 
                     case 7:
-                        strcpy(loggedInUser, ""); 
+                        strcpy(loggedInUser, "");
                         break;
 
                     default:
@@ -697,7 +697,7 @@ void login(Node *head)
     } while (angka != 3);
 }
 
-void deleteakun(Node *&head)
+void deleteakun()
 {
     char nama_login[50], password[50], filename[100];
     bool ditemukan = false;
@@ -732,14 +732,14 @@ void deleteakun(Node *&head)
 
             if (previous == nullptr)
             {
-                head = bantu->next; 
+                head = bantu->next;
             }
             else
             {
-                previous->next = bantu->next; 
+                previous->next = bantu->next;
             }
 
-            delete bantu; 
+            delete bantu;
             cout << "Akun berhasil dihapus." << endl;
 
             FILE *file = fopen("akun.dat", "wb");
@@ -758,7 +758,7 @@ void deleteakun(Node *&head)
                 cout << "Gagal menulis ulang file akun." << endl;
             }
 
-            break; 
+            break;
         }
 
         previous = bantu;
@@ -771,7 +771,7 @@ void deleteakun(Node *&head)
     }
 }
 
-void tampilkanakun(int &jumlah, Node *head)
+void tampilkanakun(int &jumlah)
 {
     int i = 0;
     FILE *file = fopen("akun.dat", "rb");
@@ -797,23 +797,25 @@ void tampilkanakun(int &jumlah, Node *head)
     }
     else
     {
-        while (head != nullptr)
+        Node *bantu = head;
+        while (bantu != nullptr)
         {
-            pemilik *p = head->info; 
+            pemilik *p = bantu->info;
             cout << " Akun Ke-" << i + 1 << endl;
             cout << " " << p->nama << endl;
             cout << " Tanggal Pendaftaran: " << p->datetime << endl;
             cout << endl;
             i++;
-            head = head->next;
+            bantu = bantu->next;
         }
+
         cout << endl;
         cout << "Data Sukses Ditampilkan\n";
     }
     fclose(file);
 }
 
-void bacadataakun(Node *&head)
+void bacadataakun()
 {
     FILE *file = fopen("akun.dat", "rb");
     pemilik temp;
@@ -824,7 +826,7 @@ void bacadataakun(Node *&head)
     }
     while (fread(&temp, sizeof(pemilik), 1, file))
     {
-        sisipDepan(head, temp);
+        sisipDepan(temp);
     }
 
     fclose(file);
@@ -833,8 +835,7 @@ void bacadataakun(Node *&head)
 int main()
 {
 
-    Node *head = nullptr;
-    bacadataakun(head);
+    bacadataakun();
     int pilih, jumlah = 0;
     do
     {
@@ -844,22 +845,22 @@ int main()
         switch (pilih)
         {
         case 1:
-            daftar(jumlah, head);
+            daftar(jumlah);
             berhenti();
             break;
 
         case 2:
-            login(head);
+            login();
             berhenti();
             break;
 
         case 3:
-            deleteakun(head);
+            deleteakun();
             berhenti();
             break;
 
         case 4:
-            tampilkanakun(jumlah, head);
+            tampilkanakun(jumlah);
             berhenti();
             break;
 
